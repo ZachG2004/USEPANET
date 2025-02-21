@@ -46,7 +46,7 @@ void runHydraulics(EN_Project pp, char *reportFile, char *inputFile = "", char r
 
     // If a saveName is specified for input file, run savefile
   if (saveInput == 1 && runType == "noinput") { ERRCODE(EN_saveinpfile(pp, inpSaveName.append(".inp"))); }
-  elif (saveInput == 1 && runType == "input") { auto time = std::chrono::system_clock::now(); ERRCODE(EN_saveinpfile(pp, inpSaveName.append("[Ran: %s]", time))); }
+  else if (saveInput == 1 && runType == "input") { auto time = std::chrono::system_clock::now(); ERRCODE(EN_saveinpfile(pp, inpSaveName.append("[Ran: %s]", time))); }
   else continue;
   // Searcj the error message code for its explanation
   EN_geterror(errcode, errmsg, EN_MAXMSG);
