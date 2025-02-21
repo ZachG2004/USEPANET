@@ -28,8 +28,8 @@ void runSetup(EN_Project pp, int *flowUnit, int *headFormula, char *reportFile, 
 // Establish Error Handler to generate Hydraulics Report, while parsing errors along the way
 void runHydraulics(EN_Project pp, char *reportFile, char *inputFile = "", char runType = "noinput", int saveInput = 1) {
   if (saveInput == 1 && inputFile != "") { continue; }
-    elif (saveInput == 1 && inputFile == "") { printf("In order to save Input, please specify an input file name \n"); return 1; }
-    elif (saveInput == 0) { printf("Continuing without saving InputFile"); continue; }
+    else if (saveInput == 1 && inputFile == "") { printf("In order to save Input, please specify an input file name \n"); return 1; }
+    else if (saveInput == 0) { printf("Continuing without saving InputFile"); continue; }
     else return ("saveInput must be '0' or '1' (inputted: %d) | runType must be 'input' or 'noinput' (inputted: %s)", saveInput, runType);
 
   // Establish code number variable and counter/msg
