@@ -14,7 +14,7 @@ using namespace std;
 // initalizing project information and return errorcodes
 // Mandatory pp,  project name - mandatory flow units - mandatory head calculation method formula - mandatory report file namespace
 // Optional output file (binary) - optional inputFile (for running)
-void runSetup(EN_Project pp, int flowUnit, int headFormula, std::string reportFile, std::string outFile = "", std::string inputFile = "") {
+void runSetup(EN_Project pp, int flowUnit, int headFormula, std::string reportFile, std::string outFile = "") {
   // Appending Filetypes
   std::string fullOutFile;
   if (outFile != "") { std::string fullOutFile = outFile + ".out"; }
