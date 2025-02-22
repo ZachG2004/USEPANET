@@ -1,5 +1,5 @@
 #/bin/zsh
-cd ~/Documents/USEPANET/Homework\ Assignment\ 04/builds/debug
+cd ~/Documents/USEPANET/Homework\ Assignment\ 04/builds/logs
 
 g++ \
 -Wall -O2 -v \

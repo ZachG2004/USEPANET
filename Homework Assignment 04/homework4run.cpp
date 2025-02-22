@@ -19,8 +19,7 @@ int main(void){
   std::string reportFile = "homework04_EPANET_Report";
   int units  = EN_GPM; // Creates enum Units, indicating a base of Gallons/Minute
   int headMethod = EN_DW; // Create an enum headMethod, which indicates the Darcy Wisebach equation
-
+  
   runSetup(proj, units, headMethod, reportFile);
 
-  // Final Project completion and cleanup
 }
