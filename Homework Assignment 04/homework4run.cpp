@@ -13,7 +13,7 @@ using namespace std;
 
 int main(void){
   // Establishing namespace for variables
-  std::map<int, std::string> nodeTracker; // Use to index numerically all nodes and junctions
+  std::map<int, std::map<int, std::string>> nodeTracker; // Use to index numerically all nodes and junctions
   EN_Project proj = nullptr; // Establish the EN_Project project pointer, as a EPANET Project
   std::string outputFile = "homework04Output";
   std::string inputFile = "homework04Input";
@@ -25,7 +25,10 @@ int main(void){
   runSetup(proj, units, headMethod, reportFile);
 
   addJunction(proj, "J1", nodeTracker);
-  std::cout << nodeTracker[1] << std::endl;
+  addJunction(proj, "J2", nodeTracker);
+  std::cout << nodeTracker[1][1] << " ||\n" << nodeTracker[1][2] << std::endl;
+  addPipe(proj, "pipe1", "J1", "J2", nodeTracker);
+  std::cout << nodeTracker[1][1] << " ||\n" << nodeTracker[1][2] << " ||\n" << nodeTracker[4][1] << std::endl;
 
   EN_deleteproject(proj);
   return 0;

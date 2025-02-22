@@ -93,7 +93,7 @@ void runHydraulics(EN_Project pp, std::string reportFile, std::string inputFile 
 // Junction Tank and Reservoir are EN_addnode() calls, Pipe and Pump are EN_addlink() calls
 // inputs are all required, and represent the project - a tag for the node, and a storage map to cirrelate EPANET's ID and its Tag
 // Only addJunction is annotated, as these functions are variations on the same.
-void addJunction(EN_Project pp, const char *nodeTag, std::map<int, std::string>& indexStorage) {
+void addJunction(EN_Project pp, const char *nodeTag, std::map<int, std::map<int, std::string>>& indexStorage) {
   // Establish errorcode and a blank index value (temporary)
   int errcode = 0;
   char errmsg[EN_MAXMSG + 1];
@@ -103,7 +103,7 @@ void addJunction(EN_Project pp, const char *nodeTag, std::map<int, std::string>&
   ERRCODE(EN_addnode(pp, nodeTag, EN_JUNCTION, &index));
 
   // Append to the indexStorage map a key:value pair for this Junction
-  indexStorage[index] = std::format("Junction (Tag: {})", nodeTag); // use std::format (C++20) to create a value with the NodeType and its tag denoted. Store this with its key
+  indexStorage[1][index] = std::format("Junction (netIndex: [{}], Tag: {})", index, nodeTag); // use std::format (C++20) to create a value with the NodeType and its tag denoted. Store this with its key
   // Retrieve error message if any
   if (errcode) {
       EN_geterror(errcode, errmsg, EN_MAXMSG);
@@ -111,14 +111,14 @@ void addJunction(EN_Project pp, const char *nodeTag, std::map<int, std::string>&
   }
 }
 
-void addTank(EN_Project pp, const char *nodeTag, std::map<int, std::string>& indexStorage) {
+void addTank(EN_Project pp, const char *nodeTag, std::map<int, std::map<int, std::string>>& indexStorage) {
   int errcode = 0;
   char errmsg[EN_MAXMSG + 1];
   int index;
 
   ERRCODE(EN_addnode(pp, nodeTag, EN_TANK, &index));
 
-  indexStorage[index] = std::format("Tank (Tag: {})", nodeTag);
+  indexStorage[2][index] = std::format("Tank (netIndex: [{}], Tag: {})", index, nodeTag);
 
   // Retrieve error message if any
   if (errcode) {
@@ -127,14 +127,14 @@ void addTank(EN_Project pp, const char *nodeTag, std::map<int, std::string>& ind
   }
 }
 
-void addReservoir(EN_Project pp, const char *nodeTag, std::map<int, std::string>& indexStorage) {
+void addReservoir(EN_Project pp, const char *nodeTag, std::map<int, std::map<int, std::string>>& indexStorage) {
   int errcode = 0;
   char errmsg[EN_MAXMSG + 1];
   int index;
 
   ERRCODE(EN_addnode(pp, nodeTag, EN_RESERVOIR, &index));
 
-  indexStorage[index] = std::format("Reservoir (Tag: {})", nodeTag);
+  indexStorage[3][index] = std::format("Reservoir (netIndex: [{}], Tag: {})", index, nodeTag);
 
   // Retrieve error message if any
   if (errcode) {
@@ -143,14 +143,14 @@ void addReservoir(EN_Project pp, const char *nodeTag, std::map<int, std::string>
   }
 }
 
-void addPipe(EN_Project pp, const char *nodeTag, const char *junctionOne, const char *junctionTwo, std::map<int, std::string>& indexStorage) {
+void addPipe(EN_Project pp, const char *nodeTag, const char *junctionOne, const char *junctionTwo, std::map<int, std::map<int, std::string>>& indexStorage) {
   int errcode = 0;
   char errmsg[EN_MAXMSG + 1];
   int index;
 
   ERRCODE(EN_addlink(pp, nodeTag, EN_PIPE, junctionOne, junctionTwo, &index));
 
-  indexStorage[index] = std::format("Pipe (Tag: {})", nodeTag);
+  indexStorage[4][index] = std::format("Pipe (netIndex: [{}], Tag: {})", index, nodeTag);
 
   // Retrieve error message if any
   if (errcode) {
@@ -159,14 +159,14 @@ void addPipe(EN_Project pp, const char *nodeTag, const char *junctionOne, const 
   }
 }
 
-void addPump(EN_Project pp, const char *nodeTag, const char *junctionOne, const char *junctionTwo, std::map<int, std::string>& indexStorage) {
+void addPump(EN_Project pp, const char *nodeTag, const char *junctionOne, const char *junctionTwo, std::map<int, std::map<int, std::string>>& indexStorage) {
   int errcode = 0;
   char errmsg[EN_MAXMSG + 1];
   int index;
 
   ERRCODE(EN_addlink(pp, nodeTag, EN_PUMP, junctionOne, junctionTwo, &index));
 
-  indexStorage[index] = std::format("Pump (Tag: {})", nodeTag);
+  indexStorage[5][index] = std::format("Pump (netIndex: [{}], Tag: {})", index, nodeTag);
 
   // Retrieve error message if any
   if (errcode) {
