@@ -103,10 +103,7 @@ void addJunction(EN_Project pp, const char *nodeTag, std::map<int, std::string>&
   ERRCODE(EN_addnode(pp, nodeTag, EN_JUNCTION, &index));
 
   // Append to the indexStorage map a key:value pair for this Junction
-  std::ostringstream tempstream; // Create a temporary string of type stringstream
-  tempstream << "Pump (Tag: " << nodeTag << ")"; // format the stringstream
-  indexStorage[index] = tempstream.str(); // Make its type str() and pass it to indexStorage with key index
-
+  indexStorage[index] = std::format("Junction (Tag: {})", nodeTag); // use std::format (C++20) to create a value with the NodeType and its tag denoted. Store this with its key
   // Retrieve error message if any
   if (errcode) {
       EN_geterror(errcode, errmsg, EN_MAXMSG);
@@ -121,9 +118,7 @@ void addTank(EN_Project pp, const char *nodeTag, std::map<int, std::string>& ind
 
   ERRCODE(EN_addnode(pp, nodeTag, EN_TANK, &index));
 
-  std::ostringstream tempstream;
-  tempstream << "Tank (Tag: " << nodeTag << ")";
-  indexStorage[index] = tempstream.str();
+  indexStorage[index] = std::format("Tank (Tag: {})", nodeTag);
 
   // Retrieve error message if any
   if (errcode) {
@@ -139,9 +134,7 @@ void addReservoir(EN_Project pp, const char *nodeTag, std::map<int, std::string>
 
   ERRCODE(EN_addnode(pp, nodeTag, EN_RESERVOIR, &index));
 
-  std::ostringstream tempstream;
-  tempstream << "Reservoir (Tag: " << nodeTag << ")";
-  indexStorage[index] = tempstream.str();
+  indexStorage[index] = std::format("Reservoir (Tag: {})", nodeTag);
 
   // Retrieve error message if any
   if (errcode) {
@@ -157,9 +150,7 @@ void addPipe(EN_Project pp, const char *nodeTag, const char *junctionOne, const 
 
   ERRCODE(EN_addlink(pp, nodeTag, EN_PIPE, junctionOne, junctionTwo, &index));
 
-  std::ostringstream tempstream;
-  tempstream << "Basic Pipe (Tag: " << nodeTag << ")";
-  indexStorage[index] = tempstream.str();
+  indexStorage[index] = std::format("Pipe (Tag: {})", nodeTag);
 
   // Retrieve error message if any
   if (errcode) {
@@ -175,9 +166,7 @@ void addPump(EN_Project pp, const char *nodeTag, const char *junctionOne, const 
 
   ERRCODE(EN_addlink(pp, nodeTag, EN_PUMP, junctionOne, junctionTwo, &index));
 
-  std::ostringstream tempstream;
-  tempstream << "Pump (Tag: " << nodeTag << ")";
-  indexStorage[index] = tempstream.str();
+  indexStorage[index] = std::format("Pump (Tag: {})", nodeTag);
 
   // Retrieve error message if any
   if (errcode) {

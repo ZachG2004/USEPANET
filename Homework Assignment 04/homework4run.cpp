@@ -25,11 +25,7 @@ int main(void){
   runSetup(proj, units, headMethod, reportFile);
 
   addJunction(proj, "J1", nodeTracker);
-  if (nodeTracker.find(1) != nodeTracker.end()) {
-      std::cout << nodeTracker[1] << std::endl;
-  } else {
-      std::cerr << "Error: Junction index not found in nodeTracker!" << std::endl;
-  }
+  std::cout << nodeTracker[1] << std::endl;
 
   EN_deleteproject(proj);
   return 0;
