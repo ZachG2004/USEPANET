@@ -103,7 +103,7 @@ void addJunction(EN_Project pp, const char *nodeTag, std::map<int, std::map<int,
   ERRCODE(EN_addnode(pp, nodeTag, EN_JUNCTION, &index));
 
   // Append to the indexStorage map a key:value pair for this Junction
-  indexStorage[1][index] = std::format("Junction (netIndex: [{}], Tag: {})", index, nodeTag); // use std::format (C++20) to create a value with the NodeType and its tag denoted. Store this with its key
+  indexStorage[1][index] = std::format("nID[{}] : tag[{}] : type[Junction]", index, nodeTag); // use std::format (C++20) to create a value with the NodeType and its tag denoted. Store this with its key
   // Retrieve error message if any
   if (errcode) {
       EN_geterror(errcode, errmsg, EN_MAXMSG);
@@ -118,7 +118,7 @@ void addTank(EN_Project pp, const char *nodeTag, std::map<int, std::map<int, std
 
   ERRCODE(EN_addnode(pp, nodeTag, EN_TANK, &index));
 
-  indexStorage[2][index] = std::format("Tank (netIndex: [{}], Tag: {})", index, nodeTag);
+  indexStorage[1][index] = std::format("nID[{}] : tag[{}] : type[Tank]", index, nodeTag);
 
   // Retrieve error message if any
   if (errcode) {
@@ -134,7 +134,7 @@ void addReservoir(EN_Project pp, const char *nodeTag, std::map<int, std::map<int
 
   ERRCODE(EN_addnode(pp, nodeTag, EN_RESERVOIR, &index));
 
-  indexStorage[3][index] = std::format("Reservoir (netIndex: [{}], Tag: {})", index, nodeTag);
+  indexStorage[1][index] = std::format("nID[{}] : tag[{}] : type[Reservoir]", index, nodeTag);
 
   // Retrieve error message if any
   if (errcode) {
@@ -143,6 +143,7 @@ void addReservoir(EN_Project pp, const char *nodeTag, std::map<int, std::map<int
   }
 }
 
+
 void addPipe(EN_Project pp, const char *nodeTag, const char *junctionOne, const char *junctionTwo, std::map<int, std::map<int, std::string>>& indexStorage) {
   int errcode = 0;
   char errmsg[EN_MAXMSG + 1];
@@ -150,7 +151,7 @@ void addPipe(EN_Project pp, const char *nodeTag, const char *junctionOne, const 
 
   ERRCODE(EN_addlink(pp, nodeTag, EN_PIPE, junctionOne, junctionTwo, &index));
 
-  indexStorage[4][index] = std::format("Pipe (netIndex: [{}], Tag: {})", index, nodeTag);
+  indexStorage[2][index] = std::format("nID[{}] : tag[{}] : type[Pipe]", index, nodeTag);
 
   // Retrieve error message if any
   if (errcode) {
@@ -166,7 +167,7 @@ void addPump(EN_Project pp, const char *nodeTag, const char *junctionOne, const 
 
   ERRCODE(EN_addlink(pp, nodeTag, EN_PUMP, junctionOne, junctionTwo, &index));
 
-  indexStorage[5][index] = std::format("Pump (netIndex: [{}], Tag: {})", index, nodeTag);
+  indexStorage[2][index] = std::format("nID[{}] : tag[{}] : type[Pump]", index, nodeTag);
 
   // Retrieve error message if any
   if (errcode) {

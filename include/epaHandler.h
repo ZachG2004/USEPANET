@@ -6,7 +6,7 @@ void runHydraulics(EN_Project pp, std::string reportFile, std::string inputFile 
 
 void addTank(EN_Project pp, const char *nodeTag, std::map<int, std::map<int, std::string>>& indexStorage);
 void addJunction(EN_Project pp, const char *nodeTag, std::map<int, std::map<int, std::string>>& indexStorage);
-void addReservoir(EN_Project pp, const char *nodeTag, std::map<int, std::map<int, std::string>> indexStorage);
+void addReservoir(EN_Project pp, const char *nodeTag, std::map<int, std::map<int, std::string>>& indexStorage);
 void addPipe(EN_Project pp, const char *nodeTag, const char *junctionOne, const char *junctionTwo, std::map<int, std::map<int, std::string>>& indexStorage);
 void addPump(EN_Project pp, const char *nodeTag, const char *junctionOne, const char *junctionTwo, std::map<int, std::map<int, std::string>>& indexStorage);
 
