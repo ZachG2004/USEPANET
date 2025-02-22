@@ -7,7 +7,7 @@
 // namespace and inclusions established
 #include <iostream>
 #include <epanet2_2.h>
-#include </include/handlerForEPANET.cpp>
+#include </include/epaHandler.h>
 using namespace std;
 
 int main(void){

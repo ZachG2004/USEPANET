@@ -14,17 +14,23 @@ using namespace std;
 // initalizing project information and return errorcodes
 // Mandatory pp,  project name - mandatory flow units - mandatory head calculation method formula - mandatory report file namespace
 // Optional output file (binary) - optional inputFile (for running)
-void runSetup(EN_Project pp, int *flowUnit, int *headFormula, char *reportFile, char *outFile = "", char *inputFile = "") {
-  // Establish Error number varioable and counter/msg
+void runSetup(EN_Project pp, int flowUnit, int headFormula, std::string reportFile, std::string outFile = "", std::string inputFile = "") {
+  // Appending Filetypes
+  std::string fullOutFile;
+  if (outFile != "") { std::string fullOutFile = outFile + ".out"; }
+  else { std::string fullOutFile = outFile; }
+
+  std::string fullReportFile = reportFile + ".rpt";
+
+  // Establish Error number variable and counter/msg
   int errcode = 0;
   char errmsg[EN_MAXMSG + 1];
 
   // Run these commands to setup EN_Project
   ERRCODE(EN_createproject(&pp));
-  if (outFile != "") { ERRCODE(EN_init(pp, reportFile.append(".rpt"), outFile.append(".out"), flowUnit, headFormula)); }
-  else { ERRCODE(EN_init(pp, reportFile.append(".rpt"), "", flowUnit, headFormula)); }
+  ERRCODE(EN_init(pp, fullReportFile.c_str(), fullOutFile.c_str(), flowUnit, headFormula));
 
-  // Searcj the error message code for its explanation
+  // Search the error message code for its explanation
   EN_geterror(errcode, errmsg, EN_MAXMSG);
 
   // Return Error Code with message and appropriate information
@@ -32,7 +38,8 @@ void runSetup(EN_Project pp, int *flowUnit, int *headFormula, char *reportFile, 
 }
 
 // Establish Error Handler to generate Hydraulics Report, while parsing errors along the way
-
+// Will REQUIRE definition of project name and a reportFIle name.
+// Optionally define a inputFIle, if runSetup() isn't used; and
 void runHydraulics(EN_Project pp, std::string reportFile, std::string inputFile = "", std::string runType = "noinput", int saveInput = 1) {
   // Validate saveInput and runType
   if (saveInput != 0 && saveInput != 1) { printf("saveInput must be '0' or '1' (inputted: %d)\n", saveInput); return; }
@@ -51,7 +58,7 @@ void runHydraulics(EN_Project pp, std::string reportFile, std::string inputFile 
       std::string fullReportFile = reportFile + ".rpt";
       errcode = EN_open(pp, fullInputFile.c_str(), fullReportFile.c_str(), "");
   }
-  else { printf("Assuming EN_init function was run to initialize Project.\n") }
+  else { printf("Assuming EN_init function was run to initialize Project.\n"); }
 
   // Run hydraulic analysis
   ERRCODE(EN_solveH(pp));
