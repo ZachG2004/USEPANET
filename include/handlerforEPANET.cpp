@@ -72,7 +72,7 @@ void runHydraulics(EN_Project pp, std::string reportFile, std::string inputFile 
           saveName = inputFile + ".inp";
       }
       else {
-          auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+          const auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
           saveName = inputFile + "[Ran: " + std::to_string(time) + "].inp";
       }
       errcode = EN_saveinpfile(pp, saveName.c_str());
