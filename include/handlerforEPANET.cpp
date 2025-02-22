@@ -6,6 +6,9 @@
 
 // namespace and inclusions established
 #include <iostream>
+#include <sstream>
+#include <map>
+#include <string>
 #include <epanet2_2.h>
 #define ERRCODE(x) (errcode = ((errcode > 100) ? (errcode) : (x)))
 using namespace std;
@@ -14,7 +17,7 @@ using namespace std;
 // initalizing project information and return errorcodes
 // Mandatory pp,  project name - mandatory flow units - mandatory head calculation method formula - mandatory report file namespace
 // Optional output file (binary) - optional inputFile (for running)
-void runSetup(EN_Project pp, int flowUnit, int headFormula, std::string reportFile, std::string outFile = "") {
+void runSetup(EN_Project& pp, int flowUnit, int headFormula, std::string reportFile, std::string outFile = "") {
   // Appending Filetypes
   std::string fullOutFile;
   if (outFile != "") { std::string fullOutFile = outFile + ".out"; }
@@ -77,6 +80,104 @@ void runHydraulics(EN_Project pp, std::string reportFile, std::string inputFile 
       }
       errcode = EN_saveinpfile(pp, saveName.c_str());
   }
+
+  // Retrieve error message if any
+  if (errcode) {
+      EN_geterror(errcode, errmsg, EN_MAXMSG);
+      printf("Error Code [%d], Message: \n%s\n", errcode, errmsg);
+  }
+}
+
+
+// Establishing Error Handler and indexer for various Network components. More to be added as needed
+// Junction Tank and Reservoir are EN_addnode() calls, Pipe and Pump are EN_addlink() calls
+// inputs are all required, and represent the project - a tag for the node, and a storage map to cirrelate EPANET's ID and its Tag
+// Only addJunction is annotated, as these functions are variations on the same.
+void addJunction(EN_Project pp, const char *nodeTag, std::map<int, std::string>& indexStorage) {
+  // Establish errorcode and a blank index value (temporary)
+  int errcode = 0;
+  char errmsg[EN_MAXMSG + 1];
+  int index;
+
+  // Add the node, with type EN_Junction, and save its output integer to the index pointer
+  ERRCODE(EN_addnode(pp, nodeTag, EN_JUNCTION, &index));
+
+  // Append to the indexStorage map a key:value pair for this Junction
+  std::ostringstream tempstream; // Create a temporary string of type stringstream
+  tempstream << "Pump (Tag: " << nodeTag << ")"; // format the stringstream
+  indexStorage[index] = tempstream.str(); // Make its type str() and pass it to indexStorage with key index
+
+  // Retrieve error message if any
+  if (errcode) {
+      EN_geterror(errcode, errmsg, EN_MAXMSG);
+      printf("Error Code [%d], Message: \n%s\n", errcode, errmsg);
+  }
+}
+
+void addTank(EN_Project pp, const char *nodeTag, std::map<int, std::string>& indexStorage) {
+  int errcode = 0;
+  char errmsg[EN_MAXMSG + 1];
+  int index;
+
+  ERRCODE(EN_addnode(pp, nodeTag, EN_TANK, &index));
+
+  std::ostringstream tempstream;
+  tempstream << "Tank (Tag: " << nodeTag << ")";
+  indexStorage[index] = tempstream.str();
+
+  // Retrieve error message if any
+  if (errcode) {
+      EN_geterror(errcode, errmsg, EN_MAXMSG);
+      printf("Error Code [%d], Message: \n%s\n", errcode, errmsg);
+  }
+}
+
+void addReservoir(EN_Project pp, const char *nodeTag, std::map<int, std::string>& indexStorage) {
+  int errcode = 0;
+  char errmsg[EN_MAXMSG + 1];
+  int index;
+
+  ERRCODE(EN_addnode(pp, nodeTag, EN_RESERVOIR, &index));
+
+  std::ostringstream tempstream;
+  tempstream << "Reservoir (Tag: " << nodeTag << ")";
+  indexStorage[index] = tempstream.str();
+
+  // Retrieve error message if any
+  if (errcode) {
+      EN_geterror(errcode, errmsg, EN_MAXMSG);
+      printf("Error Code [%d], Message: \n%s\n", errcode, errmsg);
+  }
+}
+
+void addPipe(EN_Project pp, const char *nodeTag, const char *junctionOne, const char *junctionTwo, std::map<int, std::string>& indexStorage) {
+  int errcode = 0;
+  char errmsg[EN_MAXMSG + 1];
+  int index;
+
+  ERRCODE(EN_addlink(pp, nodeTag, EN_PIPE, junctionOne, junctionTwo, &index));
+
+  std::ostringstream tempstream;
+  tempstream << "Basic Pipe (Tag: " << nodeTag << ")";
+  indexStorage[index] = tempstream.str();
+
+  // Retrieve error message if any
+  if (errcode) {
+      EN_geterror(errcode, errmsg, EN_MAXMSG);
+      printf("Error Code [%d], Message: \n%s\n", errcode, errmsg);
+  }
+}
+
+void addPump(EN_Project pp, const char *nodeTag, const char *junctionOne, const char *junctionTwo, std::map<int, std::string>& indexStorage) {
+  int errcode = 0;
+  char errmsg[EN_MAXMSG + 1];
+  int index;
+
+  ERRCODE(EN_addlink(pp, nodeTag, EN_PUMP, junctionOne, junctionTwo, &index));
+
+  std::ostringstream tempstream;
+  tempstream << "Pump (Tag: " << nodeTag << ")";
+  indexStorage[index] = tempstream.str();
 
   // Retrieve error message if any
   if (errcode) {

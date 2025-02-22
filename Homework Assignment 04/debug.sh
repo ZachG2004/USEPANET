@@ -2,9 +2,9 @@
 cd ~/Documents/USEPANET/Homework\ Assignment\ 04/builds/logs
 
 g++ \
--Wall -O2 -v \
+-Wall -O2 -v -std=c++20 \
 ~/Documents/USEPANET/Homework\ Assignment\ 04/homework4run.cpp \
 ~/Documents/USEPANET/include/handlerforEPANET.cpp \
 -L/Users/zachfrost/Applications/EPANET/build/lib \
 -lepanet2 \
-2>&1 | tee -a "debug_$(date +%F_%R).log"
+| tee -a "debug_$(date +%F_%R).log"  2>&1
