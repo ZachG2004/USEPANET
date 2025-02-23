@@ -2,7 +2,7 @@
 *.DS_Store
 
 # Ignore debug builds and debug log files
-**/debug
+**/debug/*
 !**/debug/*_imp
 **/logs/debug/*.log
 !**/logs/debug/*_imp.log
