@@ -1,2 +1,5 @@
 # Ignore the .DS_Store files in all directories
-.DS_Store
+*.DS_Store
+
+# Ignore debug log files
+**/logs/debug

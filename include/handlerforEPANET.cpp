@@ -17,13 +17,11 @@ using namespace std;
 // initalizing project information and return errorcodes
 // Mandatory pp,  project name - mandatory flow units - mandatory head calculation method formula - mandatory report file namespace
 // Optional output file (binary) - optional inputFile (for running)
-void runSetup(EN_Project& pp, int flowUnit, int headFormula, std::string reportFile, std::string outFile = "") {
+void runSetup(EN_Project& pp, int flowUnit, int headFormula, std::string reportFile, std::string outFile = "", std::string titleOne = "", std::string titleTwo = "", std::string titleThree = "") {
   // Appending Filetypes
   std::string fullOutFile;
-  if (outFile != "") { std::string fullOutFile = outFile + ".out"; }
-  else { std::string fullOutFile = outFile; }
-
-  std::string fullReportFile = reportFile + ".rpt";
+  if (outFile != "") { std::string fullOutFile = outFile + ".out"; } // If a output file was named, make it to have .out
+  std::string fullReportFile = reportFile + ".rpt"; // add .rpt file extension to ReportFile
 
   // Establish Error number variable and counter/msg
   int errcode = 0;
@@ -32,7 +30,7 @@ void runSetup(EN_Project& pp, int flowUnit, int headFormula, std::string reportF
   // Run these commands to setup EN_Project
   ERRCODE(EN_createproject(&pp));
   ERRCODE(EN_init(pp, fullReportFile.c_str(), fullOutFile.c_str(), flowUnit, headFormula));
-
+  if (titleOne != "") { EN_settitle(pp, titleOne.c_str(), titleTwo.c_str(), titleThree.c_str()); }
   // Search the error message code for its explanation
   EN_geterror(errcode, errmsg, EN_MAXMSG);
 
