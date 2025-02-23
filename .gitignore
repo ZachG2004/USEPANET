@@ -1,5 +1,8 @@
 # Ignore the .DS_Store files in all directories
 *.DS_Store
 
-# Ignore debug log files
-**/logs/debug
+# Ignore debug builds and debug log files
+**/debug
+!**/debug/*_imp
+**/logs/debug/*.log
+!**/logs/debug/*_imp.log
