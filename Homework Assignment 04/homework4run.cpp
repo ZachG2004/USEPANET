@@ -49,7 +49,7 @@ int main(void){
   EN_setjuncdata(proj, 3, 5, 200, ""); // jncC - outflow 200L/s at 5m
   EN_setjuncdata(proj, 4, 0, 200, ""); // jncD - outflow 200L/s at 0m
   // the Reservoir needs to be configured with setnodevalue (Project, nodeIndex, property, value)
-  EN_setnodevalue(proj, 1, EN_ELEVATION, 100); // rsv1 - outflow unknown at 100m
+  EN_setnodevalue(proj, 5, EN_ELEVATION, 100); // rsv1 - outflow unknown at 100m
 
   // Debug to show junction nodes were set
   std::cout << "\nJunctions created! Identified as: \n" << nodeTracker[1][1] << " | " << nodeTracker [1][2] << " | " << nodeTracker[1][3] << " | " << nodeTracker[1][4] << "\n\n" << std::endl;
