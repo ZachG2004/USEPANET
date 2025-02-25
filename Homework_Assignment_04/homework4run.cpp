@@ -17,9 +17,10 @@ int main(void){
   EN_Project proj = nullptr; // Establish the EN_Project project pointer, as a EPANET Project
 
   // Defining File types and title
-  std::string outputFile = "homework04Output";
-  std::string inputFile = "homework04Input";
-  std::string reportFile = "homework04_EPANET_Report";
+  std::string rootDir = "/users/zachfrost/Documents/USEPANET/Homework_Assignment_04/builds/";
+  std::string outputFile = rootDir + "homework04Output";
+  std::string inputFile = rootDir + "homework04Input";
+  std::string reportFile = rootDir + "homework04_EPANET_Report";
 
   std::string prjT = "Homework 04 EPANET";
   std::string author = "Zachary A. Gioppo";
@@ -32,10 +33,12 @@ int main(void){
   runSetup(proj, units, headMethod, reportFile, "", prjT, org, author);
 
   // Configure Report output
-  EN_setreport(proj, "NODES ALL");
-  EN_setreport(proj, "LINKS ALL");
+  EN_setreport(proj, "NODES ALL"); // Report on All Nodes
+  EN_setreport(proj, "LINKS ALL"); // Report on All Links
 
-  EN_setreport(proj, "ELEVATION PRECISION 3");
+  EN_setreport(proj, "ELEVATION PRECISION 3"); // Show Elevation to precision of 0.000
+  EN_setreport(proj, "PRESSURE PRECISION 3"); // Show Node Pressure to precision 0.000
+  EN_setreport(proj, "VELOCITY PRECISION 3"); // Show Link (Pipe) Velocity to precision 0.000
 
   // Add All Junction Positions (Project, objectTag, mapPointer)
   for (int i = 0; i < 4; i++){
@@ -64,12 +67,12 @@ int main(void){
   addPipe(proj, "pipe6", "jncC", "jncD", nodeTracker);
 
   // Configure pipe's properties (Project, objectTag, length, diameter, roughness, minLoss)
-  EN_setpipedata(proj, 1, 300, 0.5, 0.2, 0); // Pipe 1, length 0300m -- Diameter 0.5m, roughness 0.2mm
-  EN_setpipedata(proj, 2, 600, 0.5, 0.2, 0); // Pipe 2, length 0600m -- Diameter 0.5m, roughness 0.2mm
-  EN_setpipedata(proj, 3, 1200, 0.4, 0.2, 0); // Pipe 3, length 1200m -- Diameter 0.4m, roughness 0.2mm
-  EN_setpipedata(proj, 4, 1000, 0.4, 0.2, 0); // Pipe 4, length 1000m -- Diameter 0.4m, roughness 0.2mm
-  EN_setpipedata(proj, 5, 1200, 0.4, 0.2, 0); // Pipe 5, length 1200m -- Diameter 0.4m, roughness 0.2mm
-  EN_setpipedata(proj, 6, 600, 0.5, 0.2, 0); // Pipe 6, length 0600m -- Diameter 0.4m, roughness 0.2mm
+  EN_setpipedata(proj, 1, 300, 500, 0.2, 0); // Pipe 1, length 0300m -- Diameter 0.5m (500mm), roughness 0.2mm
+  EN_setpipedata(proj, 2, 600, 500, 0.2, 0); // Pipe 2, length 0600m -- Diameter 0.5m (500mm), roughness 0.2mm
+  EN_setpipedata(proj, 3, 1200, 400, 0.2, 0); // Pipe 3, length 1200m -- Diameter 0.4m (400mm), roughness 0.2mm
+  EN_setpipedata(proj, 4, 1000, 400, 0.2, 0); // Pipe 4, length 1000m -- Diameter 0.4m (400mm), roughness 0.2mm
+  EN_setpipedata(proj, 5, 1200, 400, 0.2, 0); // Pipe 5, length 1200m -- Diameter 0.4m (400mm), roughness 0.2mm
+  EN_setpipedata(proj, 6, 600, 500, 0.2, 0); // Pipe 6, length 0600m -- Diameter 0.5m (500mm), roughness 0.2mm
 
   // Debug to show links are set
   std::cout << "Junctions created! Identified as: \n" << nodeTracker[2][1] << " | " << nodeTracker [2][2] << " | " << nodeTracker[2][3] << "\n" << nodeTracker[2][4] << " | " << nodeTracker[2][5] << " | " << nodeTracker[2][6] << "\n\n" << std::endl;

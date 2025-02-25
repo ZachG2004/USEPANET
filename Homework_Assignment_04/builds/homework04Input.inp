@@ -5,26 +5,26 @@ Zachary A. Gioppo
 
 [JUNCTIONS]
 ;;ID                             	Elev        	Demand      	Pattern                        
- jncA                           	100.0000    
+ jncA                           	10.0000     
  jncB                           	20.0000     
  jncC                           	5.0000      
  jncD                           	0.0000      
 
 [RESERVOIRS]
 ;;ID                             	Head        	Pattern                        
- rsv1                           	0.0000      	                               
+ rsv1                           	100.0000    	                               
 
 [TANKS]
 ;;ID                             	Elevation   	InitLevel   	MinLevel    	MaxLevel    	Diameter    	MinVol      	VolCurve                       	Overflow    
 
 [PIPES]
 ;;ID                             	Node1                          	Node2                          	Length      	Diameter    	Roughness   	MinorLoss   	Status
- pipe1                          	rsv1                           	jncA                           	300.0000    	0.5000      	0.2000      	0.0000      	      
- pipe2                          	jncA                           	jncB                           	600.0000    	0.5000      	0.2000      	0.0000      	      
- pipe3                          	jncA                           	jncC                           	1200.0000   	0.4000      	0.2000      	0.0000      	      
- pipe4                          	jncB                           	jncD                           	1000.0000   	0.4000      	0.2000      	0.0000      	      
- pipe5                          	jncB                           	jncD                           	1200.0000   	0.4000      	0.2000      	0.0000      	      
- pipe6                          	jncC                           	jncD                           	600.0000    	0.5000      	0.2000      	0.0000      	      
+ pipe1                          	rsv1                           	jncA                           	300.0000    	500.0000    	0.2000      	0.0000      	      
+ pipe2                          	jncA                           	jncB                           	600.0000    	500.0000    	0.2000      	0.0000      	      
+ pipe3                          	jncA                           	jncC                           	1200.0000   	400.0000    	0.2000      	0.0000      	      
+ pipe4                          	jncB                           	jncD                           	1000.0000   	400.0000    	0.2000      	0.0000      	      
+ pipe5                          	jncB                           	jncD                           	1200.0000   	400.0000    	0.2000      	0.0000      	      
+ pipe6                          	jncC                           	jncD                           	600.0000    	500.0000    	0.2000      	0.0000      	      
 
 [PUMPS]
 ;;ID                             	Node1                          	Node2                          	Parameters  
@@ -122,12 +122,12 @@ Zachary A. Gioppo
  Elevation           PRECISION 3
  Demand              PRECISION 2
  Head                PRECISION 2
- Pressure            PRECISION 2
+ Pressure            PRECISION 3
  Quality             PRECISION 2
  Length              NO
  Diameter            NO
  Flow                PRECISION 2
- Velocity            PRECISION 2
+ Velocity            PRECISION 3
  Headloss            PRECISION 2
  Quality             NO
  State               NO
