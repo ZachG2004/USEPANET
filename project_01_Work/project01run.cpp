@@ -31,11 +31,14 @@ int main(void){
 
   // runs EN_CreateProject & EN_init with given paramaters
   runSetup(proj, units, headMethod, reportFile, "", prjT, org, author);
+  EN_setdemandmodel(proj, EN_DDA, 0, 0, 0);
 
   // Configure Report output
   EN_setreport(proj, "NODES ALL"); // Report on All Nodes
   EN_setreport(proj, "LINKS ALL"); // Report on All Links
 
+  EN_setreport(proj, "DIAMETER PRECISION 2"); // Show Diameter(s) to precision of 0.00
+  EN_setreport(proj, "LENGTH PRECISION 2"); // Show Length(s) to precision of 0.00
   EN_setreport(proj, "ELEVATION PRECISION 3"); // Show Elevation to precision of 0.000
   EN_setreport(proj, "PRESSURE PRECISION 3"); // Show Node Pressure to precision 0.000
   EN_setreport(proj, "VELOCITY PRECISION 3"); // Show Link (Pipe) Velocity to precision 0.000
@@ -57,17 +60,45 @@ int main(void){
 
   // Add a pump using (Project, objectTag, initJunction, finJunction, mapPointer)
   addPump(proj, "lowRsvPump", "rsvLow", "jncA", nodeTracker);
+  int pumpIndex = EN_getlinkindex(proj, "lowRsvPump");
 
-  // Establishing Properties for Junctions EN_setnodevalue(Project, nodeIndex, property, value) OR EN_setjuncdata(Project, nodeIndex, elev, demand, demandPattern(time))
+  // Add a Valve controller between RsvFire and the output node jncJ
+  addPipe(proj, "pipeVal01", "rsvFire", "jncJ", nodeTracker);
+  int valveIndex = EN_getlinkindex(proj, "pipeVal01");
+  EN_setlinkvalue(proj, valveIndex, EN_MINORLOSS, 0.2); // Minor loss due to a Gate Valve is typically 0.2 when fully opened
+  
+  // Establishing Properties for Junction using EN_setnodevalue(Project, nodeIndex, property, value)
+  // Adding Demands to Junctions using EN_adddemand(Project, nodeIndex, timePattern, demandID)
   EN_setnodevalue(proj, 1, EN_ELEVATION, 515); // jncA (attach to pump), at elevation of 515ft
-  EN_setjuncdata(proj, 2, 515, 35, ""); // jncB, at elevation of 515ft, and has a demand of 35gpm
-  EN_setjuncdata(proj, 3, 525, 75, ""); // jncC, at elevation of 525ft, and has a demand of 75gpm
-  EN_setjuncdata(proj, 4, 530, 40, ""); // jncD, at elevation of 530ft, and has a demand of 40gpm
-  EN_setjuncdata(proj, 5, 530, 102, ""); // jncE, at elevation of 530ft, and has a demand of 102gpm
-  EN_setjuncdata(proj, 6, 535, 98, ""); // jncF, at elevation of 535ft, and has a demand of 98gpm
-  EN_setjuncdata(proj, 7, 540, 80, ""); // jncG, at elevation of 540ft, and has a demand of 80gpm
-  EN_setjuncdata(proj, 8, 550, 50, ""); // jncH, at elevation of 550ft, and has a demand of 50gpm
+
+  EN_setnodevalue(proj, 2, EN_ELEVATION, 515); // jncB, at elevation of 515ft
+  EN_adddemand(proj, 2, 45, "", "baseDraw"); // Setting the fundamental demand (non-Fire instance), at 45 gal/min
+
+  EN_setnodevalue(proj, 3, EN_ELEVATION, 525); // jncC, at elevation of 525ft
+  EN_adddemand(proj, 3, 75, "", "baseDraw"); // Setting the fundamental demand (non-Fire instance), at 75 gal/min
+
+  EN_setnodevalue(proj, 4, EN_ELEVATION, 530); // jncD, at elevation of 530ft
+  EN_adddemand(proj, 4, 40, "", "baseDraw"); // Setting the fundamental demand (non-Fire instance), at 40 gal/min
+
+  EN_setnodevalue(proj, 5, EN_ELEVATION, 530); // jncE, at elevation of 530ft
+  EN_adddemand(proj, 5, 102, "", "baseDraw"); // Setting the fundamental demand (non-Fire instance), at 102 gal/min
+
+  EN_setnodevalue(proj, 6, EN_ELEVATION, 535); // jncF, at elevation of 535ft
+  EN_adddemand(proj, 6, 98, "", "baseDraw"); // Setting the fundamental demand (non-Fire instance), at 98 gal/min
+
+  EN_setnodevalue(proj, 7, EN_ELEVATION, 540); // jncG, at elevation of 540ft
+  EN_adddemand(proj, 7, 80, "", "baseDraw"); // Setting the fundamental demand (non-Fire instance), at 80 gal/min
+
+  EN_setnodevalue(proj, 8, EN_ELEVATION, 550); // jncH, at elevation of 550ft
+  EN_adddemand(proj, 8, 50, "", "baseDraw"); // Setting the fundamental demand (non-Fire instance), at 50 gal/min
+
   EN_setnodevalue(proj, 9, EN_ELEVATION, 550); // jncJ, at elevation of 550ft
+
+  // Save Input File
+  std::string saveName;
+  const auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+  saveName = inputFile + "[Ran: " + std::to_string(time) + "].inp";
+  EN_saveinpfile(proj, saveName.c_str());
 
   // Project Cleanup
   EN_deleteproject(proj);
