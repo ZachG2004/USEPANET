@@ -89,7 +89,7 @@ int main(void){
 
   // runs EN_CreateProject & EN_init with given paramaters
   runSetup(proj, units, headMethod, reportFile, "", prjT, org, author);
-  projSetupConfig(proj);
+  projSetupConfig(proj); // Setup configuration of report file for project
 
   // Adding all Nodes using the projNodeSetup() call
   projNodeSetup(proj, nodeTracker);
