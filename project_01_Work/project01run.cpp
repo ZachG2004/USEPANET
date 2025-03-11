@@ -104,7 +104,7 @@ int main(void){
   addPipe(proj, "pipeVal01", "rsvFire", "jncJ", nodeTracker);
   EN_getlinkindex(proj, "pipeVal01", &fireValID);
   EN_setlinkvalue(proj, fireValID, EN_MINORLOSS, 0.2); // Minor loss due to a Gate Valve is typically 0.2 when fully opened
-
+  EN_setlinkvalue(proj, fireValID, EN_STATUS, EN_CLOSED); // Set the "Status" of the fire pipe to CLOSED by default
 
   // Save Input File
   std::string saveName;

@@ -38,6 +38,26 @@ void runSetup(EN_Project& pp, int flowUnit, int headFormula, std::string reportF
   if (errcode) { printf("Error Code [%d], with Message: \n%s\n", errcode, errmsg); }
 }
 
+
+// Establish Error Handler when generating Water Quality Report(s), parsing errors as they arise
+// Requires definition of project, name and reportFIle
+// Optionally define inputFile
+void runQuality(EN_Project pp) {
+  // Establish error code and message buffer
+  int errcode = 0;
+  char errmsg[EN_MAXMSG + 1];
+
+  // Run Water Quality analysis
+  ERRCODE(EN_solveQ(pp));
+  ERRCODE(EN_report(pp));
+
+  // Retrieve error message if any
+  if (errcode) {
+      EN_geterror(errcode, errmsg, EN_MAXMSG);
+      printf("Error Code [%d], Message: \n%s\n", errcode, errmsg);
+  }
+}
+
 // Establish Error Handler to generate Hydraulics Report, while parsing errors along the way
 // Will REQUIRE definition of project name and a reportFIle name.
 // Optionally define a inputFIle, if runSetup() isn't used; and
