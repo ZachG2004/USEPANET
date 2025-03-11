@@ -46,7 +46,7 @@ void projNodeSetup(EN_Project& pp, std::map<int, std::map<int, std::string>>& in
   EN_setnodevalue(pp, 1, EN_ELEVATION, 515); // jncA (attach to pump), at elevation of 515ft
 
   EN_setnodevalue(pp, 2, EN_ELEVATION, 515); // jncB, at elevation of 515ft
-  EN_adddemand(pp, 2, 45, "", "baseDraw"); // Setting the fundamental demand (non-Fire instance), at 45 gal/min
+  EN_adddemand(pp, 2, 35, "", "baseDraw"); // Setting the fundamental demand (non-Fire instance), at 35 gal/min
 
   EN_setnodevalue(pp, 3, EN_ELEVATION, 525); // jncC, at elevation of 525ft
   EN_adddemand(pp, 3, 75, "", "baseDraw"); // Setting the fundamental demand (non-Fire instance), at 75 gal/min
@@ -105,6 +105,34 @@ int main(void){
   EN_getlinkindex(proj, "pipeVal01", &fireValID);
   EN_setlinkvalue(proj, fireValID, EN_MINORLOSS, 0.2); // Minor loss due to a Gate Valve is typically 0.2 when fully opened
   EN_setlinkvalue(proj, fireValID, EN_STATUS, EN_CLOSED); // Set the "Status" of the fire pipe to CLOSED by default
+
+  // Network Design itself
+  addPipe(proj, "pipeAB", "jncA", "jncB", nodeTracker); // PipeAB - Connect Node A to B over length 1000ft
+  addPipe(proj, "pipeAE", "jncA", "jncE", nodeTracker); // PipeAE - Connect Node A to E over length 0750ft
+  addPipe(proj, "pipeBO", "jncB", "jncO", nodeTracker); // PipeBO - Connect Node B to D over length 0750ft
+  addPipe(proj, "pipeDG", "jncD", "jncG", nodeTracker); // PipeDG - Connect Node D to G over length 0750ft
+  addPipe(proj, "pipeGE", "jncG", "jncE", nodeTracker); // PipeGE - Connect Node G to E over length 0875ft
+  addPipe(proj, "pipeEC", "jncE", "jncC", nodeTracker); // PipeEC - Connect Node E to C over length 1050ft
+  addPipe(proj, "pipeCF", "jncC", "jncF", nodeTracker); // PipeCF - Connect Node C to F over length 0750ft
+  addPipe(proj, "pipeFH", "jncF", "jncH", nodeTracker); // PipeFH - Connect Node F to H over length 0750ft
+  addPipe(proj, "pipeHJ", "jncH", "jncJ", nodeTracker); // PipeJH - Connect Node H to J over length 1000ft
+  addPipe(proj, "pipeJE", "jncJ", "jncE", nodeTracker); // PipeJE - Connect Node J to E over length 0838ft
+
+  int pipeFirstID; int pipeLastID;
+  EN_getlinkindex(proj, "pipeAB", &pipeFirstID); EN_getlinkindex(proj, "pipeJE", &pipeLastID); // Save the link index of first and last pipe pipe (not the Fire Valve or Reservoir Pump)
+  printf("Pipe First %i, \n Pipe Last %i \n\n", pipeFirstID, pipeLastID);
+  // Configure Pipes
+  double pipeTraits [3] = {24, 0.0085, 0.3};
+  int pipeLenTable [12] = {550, 250, 1000, 750, 750, 750, 875, 1050, 0750, 0750, 1000, 838};
+  for (int i = pipeFirstID; i < pipeLastID + 1; i++){
+    char linkName; EN_getlinkid(proj, i, &linkName);
+    printf("[Configuring Pipe {%c} (ID: {%i})]", linkName, i);
+    EN_setlinkvalue(proj, i, EN_LENGTH, pipeLenTable[i - 1]);
+    EN_setlinkvalue(proj, i, EN_DIAMETER, pipeTraits[0]);
+    EN_setlinkvalue(proj, i, EN_ROUGHNESS, pipeTraits[1]);
+    EN_setlinkvalue(proj, i, EN_MINORLOSS, pipeTraits[2]);
+    EN_setlinkvalue(proj, i, EN_STATUS, EN_OPEN);
+  }
 
   // Save Input File
   std::string saveName;
