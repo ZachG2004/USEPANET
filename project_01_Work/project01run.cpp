@@ -17,7 +17,7 @@ int main(void){
   EN_Project proj = nullptr; // Establish the EN_Project project pointer, as a EPANET Project
 
   // Defining File types and title
-  std::string rootDir = "/users/zachfrost/Documents/USEPANET/project_01_Work/builds/epanet_Out/";
+  std::string rootDir = "/users/zachfrost/Documents/USEPANET/project_01_Work/builds/";
   std::string outputFile = rootDir + "project01Out";
   std::string inputFile = rootDir + "project01Inp";
   std::string reportFile = rootDir + "project01_EPANET_Report";
@@ -56,7 +56,7 @@ int main(void){
   EN_setnodevalue(proj, 11, EN_ELEVATION, 645); // the high resivour will have nodeIndex 11, as it was added after low resivour
 
   // Add a pump using (Project, objectTag, initJunction, finJunction, mapPointer)
-  addPump(proj, "lowRsvPump", 1, 10, nodeTracker);
+  addPump(proj, "lowRsvPump", "rsvLow", "jncA", nodeTracker);
 
   // Establishing Properties for Junctions EN_setnodevalue(Project, nodeIndex, property, value) OR EN_setjuncdata(Project, nodeIndex, elev, demand, demandPattern(time))
   EN_setnodevalue(proj, 1, EN_ELEVATION, 515); // jncA (attach to pump), at elevation of 515ft
