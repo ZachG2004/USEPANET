@@ -16,6 +16,7 @@ MSU ENE422 - Spring 2025
  jncG                           	540.0000    
  jncH                           	550.0000    
  jncJ                           	550.0000    
+ jncK                           	500.0000    
 
 [RESERVOIRS]
 ;;ID                             	Head        	Pattern                        
@@ -27,21 +28,22 @@ MSU ENE422 - Spring 2025
 
 [PIPES]
 ;;ID                             	Node1                          	Node2                          	Length      	Diameter    	Roughness   	MinorLoss   	Status
- pipeVal01                      	rsvFire                        	jncJ                           	250.0000    	24.0000     	0.0085      	0.2000      	      
- pipeAB                         	jncA                           	jncB                           	1000.0000   	24.0000     	0.0085      	0.3000      	      
- pipeAE                         	jncA                           	jncE                           	750.0000    	24.0000     	0.0085      	0.3000      	      
- pipeBD                         	jncB                           	jncD                           	750.0000    	24.0000     	0.0085      	0.3000      	      
- pipeDG                         	jncD                           	jncG                           	750.0000    	24.0000     	0.0085      	0.3000      	      
- pipeGE                         	jncG                           	jncE                           	875.0000    	24.0000     	0.0085      	0.3000      	      
- pipeEC                         	jncE                           	jncC                           	1050.0000   	24.0000     	0.0085      	0.3000      	      
- pipeCF                         	jncC                           	jncF                           	750.0000    	24.0000     	0.0085      	0.3000      	      
- pipeFH                         	jncF                           	jncH                           	750.0000    	24.0000     	0.0085      	0.3000      	      
- pipeHJ                         	jncH                           	jncJ                           	1000.0000   	24.0000     	0.0085      	0.3000      	      
- pipeJE                         	jncJ                           	jncE                           	838.0000    	24.0000     	0.0085      	0.3000      	      
+ pipeVal01                      	rsvFire                        	jncJ                           	250.0000    	24.0000     	0.0085      	0.2000      	CLOSED
+ pipeAB                         	jncA                           	jncB                           	330.0000    	10.0000     	0.5000      	0.0000      	      
+ pipeAE                         	jncA                           	jncE                           	330.0000    	10.0000     	0.5000      	0.0000      	      
+ pipeBD                         	jncB                           	jncD                           	330.0000    	10.0000     	0.5000      	0.0000      	      
+ pipeDG                         	jncD                           	jncG                           	330.0000    	10.0000     	0.5000      	0.0000      	      
+ pipeGE                         	jncG                           	jncE                           	330.0000    	10.0000     	0.5000      	0.0000      	      
+ pipeEC                         	jncE                           	jncC                           	330.0000    	10.0000     	0.5000      	0.0000      	      
+ pipeCF                         	jncC                           	jncF                           	330.0000    	10.0000     	0.5000      	0.0000      	      
+ pipeHF                         	jncH                           	jncF                           	330.0000    	10.0000     	0.5000      	0.0000      	      
+ pipeJH                         	jncJ                           	jncH                           	330.0000    	10.0000     	0.5000      	0.0000      	      
+ pipeEJ                         	jncE                           	jncJ                           	330.0000    	10.0000     	0.5000      	0.0000      	      
+ pipePump2Net                   	jncK                           	jncA                           	550.0000    	24.0000     	0.0085      	0.3000      	      
 
 [PUMPS]
 ;;ID                             	Node1                          	Node2                          	Parameters  
- lowRsvPump                     	rsvLow                         	jncA                                 -0.0000      -0.0000       0.0000          0.0       0.0000
+ lowRsvPump                     	rsvLow                         	jncK                           	HEAD pumpCurve01
 
 [VALVES]
 ;;ID                             	Node1                          	Node2                          	Diameter    	Type  	Setting     	MinorLoss   
@@ -64,6 +66,7 @@ MSU ENE422 - Spring 2025
 
 [STATUS]
 ;;ID                             	Status/Setting
+ pipeVal01                      	closed
 
 [PATTERNS]
 ;;ID                             	Multipliers 
@@ -105,10 +108,10 @@ MSU ENE422 - Spring 2025
  DEMAND CHARGE       0.0000
 
 [TIMES]
- DURATION            0:00:00
+ DURATION            72:00:00
  HYDRAULIC TIMESTEP  1:00:00
- QUALITY TIMESTEP    0:06:00
- REPORT TIMESTEP     1:00:00
+ QUALITY TIMESTEP    1:00:00
+ REPORT TIMESTEP     3:00:00
  REPORT START        0:00:00
  PATTERN TIMESTEP    1:00:00
  PATTERN START       0:00:00
@@ -121,7 +124,7 @@ MSU ENE422 - Spring 2025
  PRESSURE            PSI
  HEADLOSS            D-W
  UNBALANCED          STOP
- QUALITY             NONE
+ QUALITY             AGE
  DEMAND MULTIPLIER   1.0000
  EMITTER EXPONENT    0.5000
  BACKFLOW ALLOWED    YES
@@ -139,7 +142,7 @@ MSU ENE422 - Spring 2025
  PAGESIZE            0
  STATUS              NO
  SUMMARY             YES
- ENERGY              NO
+ ENERGY              YES
  MESSAGES            YES
  NODES               ALL
  LINKS               ALL

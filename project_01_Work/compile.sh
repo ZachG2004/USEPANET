@@ -7,4 +7,4 @@ g++ \
 ~/Documents/USEPANET/include/handlerforEPANET.cpp \
 -L/Users/zachfrost/Applications/EPANET/build/lib \
 -lepanet2 \
-| tee -a ../logs/builds/"compile_$(date +%F_%R).log" 2>&1
+| tee -a ../logs/builds/"compile_$(date +%F_%R).log"  2>&1

@@ -42,14 +42,68 @@ void runSetup(EN_Project& pp, int flowUnit, int headFormula, std::string reportF
 // Establish Error Handler when generating Water Quality Report(s), parsing errors as they arise
 // Requires definition of project, name and reportFIle
 // Optionally define inputFile
-void runQuality(EN_Project pp) {
+void runQuality(EN_Project pp, std::string reportFile, int runMode = 1, std::string inputFile = "", std::string runType = "noinput", int saveInput = 1) {
   // Establish error code and message buffer
   int errcode = 0;
   char errmsg[EN_MAXMSG + 1];
 
-  // Run Water Quality analysis
-  ERRCODE(EN_solveQ(pp));
-  ERRCODE(EN_report(pp));
+  long t, tStep; // Timestep storage
+  // Validate saveInput and runType
+  if (saveInput != 0 && saveInput != 1) { printf("saveInput must be '0' or '1' (inputted: %d)\n", saveInput); return; }
+  if (runType != "input" && runType != "noinput") { printf("runType must be 'input' or 'noinput' (inputted: %s)\n", runType.c_str()); return; }
+
+  if (saveInput == 1 && inputFile.empty()) { printf("In order to save Input, please specify an input file name.\n"); return; }
+  else if (saveInput == 0) { printf("Continuing without saving InputFile.\n"); }
+
+  // Open file if running from input
+  if (runType == "input") {
+      std::string fullInputFile = inputFile + ".inp";
+      std::string fullReportFile = reportFile + ".rpt";
+      ERRCODE(EN_open(pp, fullInputFile.c_str(), fullReportFile.c_str(), ""));
+  }
+  else { printf("Continuing to run Water Quality. \n"); }
+
+  // Check runMode
+  if (runMode == 1) {
+    // Run Water Quality analysis continuously
+    ERRCODE(EN_solveH(pp));
+    ERRCODE(EN_saveH(pp));
+
+    ERRCODE(EN_solveQ(pp));
+    ERRCODE(EN_report(pp));
+
+  } else if (runMode == 2) {
+    // Run Water Quality Analysis Sequentially
+
+    ERRCODE(EN_openQ(pp));
+    ERRCODE(EN_initQ(pp, EN_SAVE));
+    do {
+      ERRCODE(EN_runQ(pp, &t));
+      ERRCODE(EN_nextQ(pp, &tStep));
+
+    } while (tStep > 0);
+    EN_clearreport(pp);
+    ERRCODE(EN_report(pp));
+    ERRCODE(EN_closeQ(pp));
+
+  }  else {
+    printf("Indicated mode {%i} is NOT a valid option. Enter either: \n 1 : Continuous \n 2 : Step-wise \n\n", runMode);
+    return;
+  }  // Otherwise do not run
+
+
+    // Save input file if needed
+    if (saveInput == 1) {
+        std::string saveName;
+        if (runType == "noinput") {
+            saveName = inputFile + ".inp";
+        }
+        else {
+            const auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+            saveName = inputFile + "[Ran: " + std::to_string(time) + "].inp";
+        }
+        ERRCODE(EN_saveinpfile(pp, saveName.c_str()));
+    }
 
   // Retrieve error message if any
   if (errcode) {
@@ -77,7 +131,7 @@ void runHydraulics(EN_Project pp, std::string reportFile, std::string inputFile 
   if (runType == "input") {
       std::string fullInputFile = inputFile + ".inp";
       std::string fullReportFile = reportFile + ".rpt";
-      errcode = EN_open(pp, fullInputFile.c_str(), fullReportFile.c_str(), "");
+      ERRCODE(EN_open(pp, fullInputFile.c_str(), fullReportFile.c_str(), ""));
   }
   else { printf("Assuming EN_init function was run to initialize Project.\n"); }
 
@@ -96,7 +150,7 @@ void runHydraulics(EN_Project pp, std::string reportFile, std::string inputFile 
           const auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
           saveName = inputFile + "[Ran: " + std::to_string(time) + "].inp";
       }
-      errcode = EN_saveinpfile(pp, saveName.c_str());
+      ERRCODE(EN_saveinpfile(pp, saveName.c_str()));
   }
 
   // Retrieve error message if any
@@ -106,6 +160,48 @@ void runHydraulics(EN_Project pp, std::string reportFile, std::string inputFile 
   }
 }
 
+
+void runStepwise(EN_Project pp) {
+  // Establish error code and message buffer
+  int errcode = 0;
+  char errmsg[EN_MAXMSG + 1];
+  long tStep, t;
+
+  printf("Initiating a joint analysis, running hydraulics and Quality simultaneously. \n\n");
+
+  // DEBUG
+  // long qualStUsed, hydStUsed, repStUsed;
+  // EN_gettimeparam(pp, EN_HYDSTEP, &hydStUsed);
+  // EN_gettimeparam(pp, EN_QUALSTEP, &qualStUsed);
+  // EN_gettimeparam(pp, EN_REPORTSTEP, &repStUsed);
+  // printf("Using timeStep: [Quality: %ld , Hydraulics: %ld , Report: %ld] \n\n", qualStUsed/(60*60), hydStUsed/(60*60), repStUsed/(60*60));
+
+
+  ERRCODE(EN_openH(pp));
+  ERRCODE(EN_initH(pp, EN_SAVE));
+
+  ERRCODE(EN_openQ(pp));
+  ERRCODE(EN_initQ(pp, EN_SAVE));
+
+  do {
+    ERRCODE(EN_runH(pp, &t));
+    ERRCODE(EN_runQ(pp, &t));
+
+    ERRCODE(EN_nextH(pp, &tStep));
+    ERRCODE(EN_nextQ(pp, &tStep));
+    // printf("Current time : [%ld] \n Current Remaining: [%ld] \n -- \n", t/(60*60), tStep/(60*60)); // DEBUG
+  } while (tStep > 0);
+
+  ERRCODE(EN_report(pp));
+
+  ERRCODE(EN_closeH(pp));
+  ERRCODE(EN_closeQ(pp));
+
+  if (errcode) {
+      EN_geterror(errcode, errmsg, EN_MAXMSG);
+      printf("Error Code when running Joint Quality, Hydraulic Analysis [%d], Message: \n%s\n", errcode, errmsg);
+  }
+}
 
 // Establishing Error Handler and indexer for various Network components. More to be added as needed
 // Junction Tank and Reservoir are EN_addnode() calls, Pipe and Pump are EN_addlink() calls
@@ -229,7 +325,7 @@ void addCurve(EN_Project pp, const char *nodeTag, int arLen, double xArray[], do
     ERRCODE(EN_setcurvetype(pp, index, EN_GENERIC_CURVE));
     indexStorage[3][index] = std::format("nID[{}] : tag[{}] : type[Generic Curve]", index, nodeTag);
 
-  } else { printf("Curve Type must be designated between 1 -- 5 \n ---------------- \n - 1    TnkV   - \n - 2    PmpH   - \n - 3    PmpE   - \n - 4    ValH   - \n - 5    Gnrc   - \n"); return; }
+  } else { printf("Curve Type must be designated between 1 -- 5 \n ----------------- \n -  1  :  TnkV   - \n -  2  :  PmpH   - \n -  3  :  PmpE   - \n -  4  :  ValH   - \n -  5  :  Gnrc   - \n ----------------- \n\n Curve could not be established."); return; }
 
   // Retrieve error message if any
   if (errcode) {
