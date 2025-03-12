@@ -1,5 +1,5 @@
 #/bin/zsh
-cd ~/Documents/USEPANET/project_01_Work/debug
+cd ~/Documents/USEPANET/project_01_Work/debugs
 
 g++ \
 -Wall -O2 -v -std=c++20 -o prok01net_dbg \
