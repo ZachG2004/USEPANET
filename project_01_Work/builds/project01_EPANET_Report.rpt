@@ -1,4 +1,4 @@
-  Page 1                                    Tue Mar 11 18:14:39 2025
+  Page 1                                    Tue Mar 11 20:00:31 2025
 
   ******************************************************************
   *                           E P A N E T                          *
@@ -7,3 +7,5 @@
   *                         Version 2.3                            *
   ******************************************************************
   
+  Error 226: no head curve or power rating for pump lowRsvPump
+  Error 110: cannot solve network hydraulic equations

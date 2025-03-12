@@ -76,8 +76,8 @@ int main(void){
 
   // Defining File types and title
   std::string rootDir = "/users/zachfrost/Documents/USEPANET/project_01_Work/builds/";
-  std::string outputFile = rootDir + "project01Out";
-  std::string inputFile = rootDir + "project01Inp";
+  std::string outputFile = rootDir + "outProj01";
+  std::string inputFile = rootDir + "inpProj01";
   std::string reportFile = rootDir + "project01_EPANET_Report";
 
   std::string prjT = "Project 01 Hydraulics EPANET Setup";
@@ -86,6 +86,11 @@ int main(void){
 
   int units  = EN_GPM; // Creates enum Units, indicating a base of Gallons/Minute
   int headMethod = EN_DW; // Create an enum headMethod, which indicates the Darcy Wisebach equation
+
+  double pipeTraits [3] = {24, 0.0085, 0.3}; // Traits: Pipe Diameter (24in), Pipe Roughness (0.0085 for Iron), Minor Loss (0.3 for TWO check valves, fully open);
+  int pipeLenTable [12] = {550, 250, 1000, 750, 750, 750, 875, 1050, 750, 750, 1000, 838}; // Pipe Lengths
+  double curveXVals [] = {0, 200, 400, 600, 800, 1000};
+  double curveYVals [] = {380, 360, 310, 240, 150, 50};
 
   // runs EN_CreateProject & EN_init with given paramaters
   runSetup(proj, units, headMethod, reportFile, "", prjT, org, author);
@@ -105,11 +110,14 @@ int main(void){
   EN_getlinkindex(proj, "pipeVal01", &fireValID);
   EN_setlinkvalue(proj, fireValID, EN_MINORLOSS, 0.2); // Minor loss due to a Gate Valve is typically 0.2 when fully opened
   EN_setlinkvalue(proj, fireValID, EN_STATUS, EN_CLOSED); // Set the "Status" of the fire pipe to CLOSED by default
+  EN_setlinkvalue(proj, fireValID, EN_LENGTH, pipeLenTable[1]); // Select Pipe Length
+  EN_setlinkvalue(proj, fireValID, EN_DIAMETER, pipeTraits[0]); // Select Diameter
+  EN_setlinkvalue(proj, fireValID, EN_ROUGHNESS, pipeTraits[1]); // Select Roughness
 
   // Network Design itself
   addPipe(proj, "pipeAB", "jncA", "jncB", nodeTracker); // PipeAB - Connect Node A to B over length 1000ft
   addPipe(proj, "pipeAE", "jncA", "jncE", nodeTracker); // PipeAE - Connect Node A to E over length 0750ft
-  addPipe(proj, "pipeBO", "jncB", "jncO", nodeTracker); // PipeBO - Connect Node B to D over length 0750ft
+  addPipe(proj, "pipeBD", "jncB", "jncD", nodeTracker); // PipeBD - Connect Node B to D over length 0750ft
   addPipe(proj, "pipeDG", "jncD", "jncG", nodeTracker); // PipeDG - Connect Node D to G over length 0750ft
   addPipe(proj, "pipeGE", "jncG", "jncE", nodeTracker); // PipeGE - Connect Node G to E over length 0875ft
   addPipe(proj, "pipeEC", "jncE", "jncC", nodeTracker); // PipeEC - Connect Node E to C over length 1050ft
@@ -120,13 +128,11 @@ int main(void){
 
   int pipeFirstID; int pipeLastID;
   EN_getlinkindex(proj, "pipeAB", &pipeFirstID); EN_getlinkindex(proj, "pipeJE", &pipeLastID); // Save the link index of first and last pipe pipe (not the Fire Valve or Reservoir Pump)
-  printf("Pipe First %i, \n Pipe Last %i \n\n", pipeFirstID, pipeLastID);
-  // Configure Pipes
-  double pipeTraits [3] = {24, 0.0085, 0.3};
-  int pipeLenTable [12] = {550, 250, 1000, 750, 750, 750, 875, 1050, 0750, 0750, 1000, 838};
+  // Configure General Pipenetwork options
   for (int i = pipeFirstID; i < pipeLastID + 1; i++){
-    char linkName; EN_getlinkid(proj, i, &linkName);
-    printf("[Configuring Pipe {%c} (ID: {%i})]", linkName, i);
+    // For Each Pipe (starting from the index of first mapped Pipe), set Length, Diameter Roughness, Minorloss, and status (Open/Closed)
+    // "i" is the linkIndex, and will iterate between the first and last pipe in the network (after the pump and "valve")
+    // Traits and Lengths are fetched from appropriate lookup tables
     EN_setlinkvalue(proj, i, EN_LENGTH, pipeLenTable[i - 1]);
     EN_setlinkvalue(proj, i, EN_DIAMETER, pipeTraits[0]);
     EN_setlinkvalue(proj, i, EN_ROUGHNESS, pipeTraits[1]);
@@ -134,11 +140,11 @@ int main(void){
     EN_setlinkvalue(proj, i, EN_STATUS, EN_OPEN);
   }
 
-  // Save Input File
-  std::string saveName;
-  const auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-  saveName = inputFile + "[Ran: " + std::to_string(time) + "].inp";
-  EN_saveinpfile(proj, saveName.c_str());
+  // Setup the Pump Curve
+  addCurve(proj, "pumpCurve01", 6, curveXVals, curveYVals, nodeTracker);
+
+  // Run the hydraulics for the system
+  runHydraulics(proj, reportFile, inputFile);
 
   // Project Cleanup
   EN_deleteproject(proj);

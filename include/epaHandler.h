@@ -11,4 +11,6 @@ void addReservoir(EN_Project pp, const char *nodeTag, std::map<int, std::map<int
 void addPipe(EN_Project pp, const char *nodeTag, const char *junctionOne, const char *junctionTwo, std::map<int, std::map<int, std::string>>& indexStorage);
 void addPump(EN_Project pp, const char *nodeTag, const char *junctionOne, const char *junctionTwo, std::map<int, std::map<int, std::string>>& indexStorage);
 
+void addCurve(EN_Project pp, const char *nodeTag, int ArLen, double xArray[], double yArray[], std::map<int, std::map<int, std::string>>& indexStorage, int curveType = 5);
+
 #endif

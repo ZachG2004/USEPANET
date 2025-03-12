@@ -35,7 +35,7 @@ void runSetup(EN_Project& pp, int flowUnit, int headFormula, std::string reportF
   EN_geterror(errcode, errmsg, EN_MAXMSG);
 
   // Return Error Code with message and appropriate information
-  if (errcode) { printf("Error Code [%d], with Message: \n%s\n", errcode, errmsg); }
+  if (errcode) { printf("Error Code when running Setup [%d], with Message: \n%s\n", errcode, errmsg); }
 }
 
 
@@ -54,7 +54,7 @@ void runQuality(EN_Project pp) {
   // Retrieve error message if any
   if (errcode) {
       EN_geterror(errcode, errmsg, EN_MAXMSG);
-      printf("Error Code [%d], Message: \n%s\n", errcode, errmsg);
+      printf("Error Code when running Quality [%d], Message: \n%s\n", errcode, errmsg);
   }
 }
 
@@ -102,7 +102,7 @@ void runHydraulics(EN_Project pp, std::string reportFile, std::string inputFile 
   // Retrieve error message if any
   if (errcode) {
       EN_geterror(errcode, errmsg, EN_MAXMSG);
-      printf("Error Code [%d], Message: \n%s\n", errcode, errmsg);
+      printf("Error Code when Running Hydraulics [%d], Message: \n%s\n", errcode, errmsg);
   }
 }
 
@@ -111,6 +111,8 @@ void runHydraulics(EN_Project pp, std::string reportFile, std::string inputFile 
 // Junction Tank and Reservoir are EN_addnode() calls, Pipe and Pump are EN_addlink() calls
 // inputs are all required, and represent the project - a tag for the node, and a storage map to cirrelate EPANET's ID and its Tag
 // Only addJunction is annotated, as these functions are variations on the same.
+
+// Junctions
 void addJunction(EN_Project pp, const char *nodeTag, std::map<int, std::map<int, std::string>>& indexStorage) {
   // Establish errorcode and a blank index value (temporary)
   int errcode = 0;
@@ -125,7 +127,7 @@ void addJunction(EN_Project pp, const char *nodeTag, std::map<int, std::map<int,
   // Retrieve error message if any
   if (errcode) {
       EN_geterror(errcode, errmsg, EN_MAXMSG);
-      printf("Error Code [%d], Message: \n%s\n", errcode, errmsg);
+      printf("Error Code generating Node '%s'  [%d], Message: \n%s\n", nodeTag, errcode, errmsg);
   }
 }
 
@@ -141,7 +143,7 @@ void addTank(EN_Project pp, const char *nodeTag, std::map<int, std::map<int, std
   // Retrieve error message if any
   if (errcode) {
       EN_geterror(errcode, errmsg, EN_MAXMSG);
-      printf("Error Code [%d], Message: \n%s\n", errcode, errmsg);
+      printf("Error Code generating Tank '%s' [%d], Message: \n%s\n", nodeTag, errcode, errmsg);
   }
 }
 
@@ -157,11 +159,11 @@ void addReservoir(EN_Project pp, const char *nodeTag, std::map<int, std::map<int
   // Retrieve error message if any
   if (errcode) {
       EN_geterror(errcode, errmsg, EN_MAXMSG);
-      printf("Error Code [%d], Message: \n%s\n", errcode, errmsg);
+      printf("Error Code generating Reservoir '%s'  [%d], Message: \n%s\n", nodeTag, errcode, errmsg);
   }
 }
 
-
+// Common Links
 void addPipe(EN_Project pp, const char *nodeTag, const char *junctionOne, const char *junctionTwo, std::map<int, std::map<int, std::string>>& indexStorage) {
   int errcode = 0;
   char errmsg[EN_MAXMSG + 1];
@@ -174,7 +176,7 @@ void addPipe(EN_Project pp, const char *nodeTag, const char *junctionOne, const 
   // Retrieve error message if any
   if (errcode) {
       EN_geterror(errcode, errmsg, EN_MAXMSG);
-      printf("Error Code [%d], Message: \n%s\n", errcode, errmsg);
+      printf("Error Code when generating Pipe '%s' [%d], Message: \n%s\n", nodeTag, errcode, errmsg);
   }
 }
 
@@ -190,6 +192,48 @@ void addPump(EN_Project pp, const char *nodeTag, const char *junctionOne, const 
   // Retrieve error message if any
   if (errcode) {
       EN_geterror(errcode, errmsg, EN_MAXMSG);
-      printf("Error Code [%d], Message: \n%s\n", errcode, errmsg);
+      printf("Error Code generating Pump '%s'  [%d], Message: \n%s\n", nodeTag, errcode, errmsg);
+  }
+}
+
+
+// Establishing Error Handler and Indexer for Curves. All Types of curves accounted for
+// Completed using an EN_addcurve(), EN_setcurve(), and EN_setcurvetype() calls
+// inputs are all required; except for curveType integer, which will default to '5' - Generic Curve. Can be set later with another call
+void addCurve(EN_Project pp, const char *nodeTag, int arLen, double xArray[], double yArray[], std::map<int, std::map<int, std::string>>& indexStorage, int curveType = 5) {
+  int errcode = 0;
+  char errmsg[EN_MAXMSG + 1];
+  int index;
+
+  ERRCODE(EN_addcurve(pp, nodeTag));
+  EN_getcurveindex(pp, nodeTag, &index);
+  ERRCODE(EN_setcurve(pp, index, xArray, yArray, arLen));
+
+  if (curveType == 1) {
+    ERRCODE(EN_setcurvetype(pp, index, EN_VOLUME_CURVE));
+    indexStorage[3][index] = std::format("nID[{}] : tag[{}] : type[Tank Vol/Dep Curve]", index, nodeTag);
+
+  } else if (curveType == 2) {
+    ERRCODE(EN_setcurvetype(pp, index, EN_PUMP_CURVE));
+    indexStorage[3][index] = std::format("nID[{}] : tag[{}] : type[Pump H/Q Curve]", index, nodeTag);
+
+  } else if (curveType == 3) {
+    ERRCODE(EN_setcurvetype(pp, index, EN_EFFIC_CURVE));
+    indexStorage[3][index] = std::format("nID[{}] : tag[{}] : type[Pump Eff/Q Curve]", index, nodeTag);
+
+  } else if (curveType == 4) {
+    ERRCODE(EN_setcurvetype(pp, index, EN_HLOSS_CURVE));
+    indexStorage[3][index] = std::format("nID[{}] : tag[{}] : type[Valve Hd/Q Curve]", index, nodeTag);
+
+  } else if (curveType == 5) {
+    ERRCODE(EN_setcurvetype(pp, index, EN_GENERIC_CURVE));
+    indexStorage[3][index] = std::format("nID[{}] : tag[{}] : type[Generic Curve]", index, nodeTag);
+
+  } else { printf("Curve Type must be designated between 1 -- 5 \n ---------------- \n - 1    TnkV   - \n - 2    PmpH   - \n - 3    PmpE   - \n - 4    ValH   - \n - 5    Gnrc   - \n"); return; }
+
+  // Retrieve error message if any
+  if (errcode) {
+      EN_geterror(errcode, errmsg, EN_MAXMSG);
+      printf("Error Code generating Curve '%s'  [%d], Message: \n%s\n", nodeTag, errcode, errmsg);
   }
 }
